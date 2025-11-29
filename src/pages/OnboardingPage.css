@@ -1,0 +1,193 @@
+:root {
+  --primary-color: #6366F1;
+  --secondary-color: #10B981;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --white: #FFFFFF;
+  --background: #F9FAFB;
+}
+
+.onboarding-page {
+  min-height: 100vh;
+  display: flex;
+  max-width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--white);
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.onboarding-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Logo Section */
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 48px;
+}
+
+.logo-box {
+  width: 100px;
+  height: 100px;
+  background-color: var(--primary-color);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.logo-text {
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.app-name {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Tagline Section */
+.tagline-section {
+  text-align: center;
+  margin-bottom: 64px;
+  padding: 0 24px;
+  max-width: 500px;
+}
+
+.tagline {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Button Container */
+.button-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Primary Button (Join Room) */
+.primary-button {
+  width: 100%;
+  padding: 16px 24px;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+
+.primary-button:hover {
+  background-color: #5558E3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.primary-button:active {
+  transform: translateY(0);
+}
+
+/* Outline Button (Create Room) */
+.outline-button {
+  width: 100%;
+  padding: 16px 24px;
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+
+.outline-button:hover {
+  background-color: rgba(99, 102, 241, 0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.outline-button:active {
+  transform: translateY(0);
+}
+
+/* Footer Text */
+.footer-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+  margin: 16px 0 0 0;
+}
+
+/* Desktop Responsive */
+@media (min-width: 768px) {
+  .onboarding-page {
+    padding: 60px 40px;
+    align-items: center;
+  }
+
+  .onboarding-content {
+    max-width: 600px;
+  }
+
+  .logo-box {
+    width: 120px;
+    height: 120px;
+    border-radius: 28px;
+  }
+
+  .logo-text {
+    font-size: 64px;
+  }
+
+  .app-name {
+    font-size: 48px;
+  }
+
+  .tagline {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .button-container {
+    max-width: 500px;
+  }
+
+  .primary-button,
+  .outline-button {
+    padding: 18px 32px;
+    font-size: 18px;
+  }
+}

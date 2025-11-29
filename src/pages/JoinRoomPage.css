@@ -1,0 +1,175 @@
+:root {
+  --primary-color: #6366F1;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --white: #FFFFFF;
+  --error: #EF4444;
+  --background: #F9FAFB;
+}
+
+.join-room-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--white);
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.join-room-content {
+  flex: 1;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Header */
+.header {
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.description {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Input Section */
+.input-section {
+  margin-bottom: 32px;
+}
+
+.room-code-input {
+  width: 100%;
+  padding: 20px;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  background: var(--white);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.room-code-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.room-code-input::placeholder {
+  color: #D1D5DB;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+
+.error-text {
+  font-size: 14px;
+  color: var(--error);
+  text-align: center;
+  margin-top: 12px;
+}
+
+.hint {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+  margin-top: 16px;
+}
+
+/* Button Container */
+.button-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Primary Button */
+.primary-button {
+  width: 100%;
+  padding: 16px 24px;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.primary-button:hover:not(:disabled) {
+  background-color: #5558E3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.primary-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Ghost Button */
+.ghost-button {
+  width: 100%;
+  padding: 16px 24px;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ghost-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.ghost-button:active {
+  transform: scale(0.98);
+}
+
+/* Desktop Responsive */
+@media (min-width: 768px) {
+  .join-room-page {
+    padding: 60px 40px;
+  }
+
+  .title {
+    font-size: 48px;
+  }
+
+  .description {
+    font-size: 18px;
+  }
+
+  .room-code-input {
+    font-size: 28px;
+    padding: 24px;
+  }
+
+  .primary-button,
+  .ghost-button {
+    padding: 18px 32px;
+    font-size: 18px;
+  }
+}
