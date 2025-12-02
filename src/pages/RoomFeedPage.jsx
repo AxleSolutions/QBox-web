@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { questionAPI, getSocket, initSocket } from '../services/api';
+import SettingsModal from '../components/SettingsModal';
 import './RoomFeedPage.css';
 
 export default function RoomFeedPage() {
@@ -16,6 +17,7 @@ export default function RoomFeedPage() {
   const [showAskModal, setShowAskModal] = useState(false);
   const [questionText, setQuestionText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (!roomCode) {
@@ -64,7 +66,16 @@ export default function RoomFeedPage() {
 
   const setupSocket = () => {
     const socket = getSocket() || initSocket();
+    
+    // Join room immediately
     socket.emit('join-room', roomCode);
+    console.log('Joined room via socket:', roomCode);
+
+    // Rejoin room on reconnection
+    socket.on('connect', () => {
+      console.log('Socket connected, rejoining room:', roomCode);
+      socket.emit('join-room', roomCode);
+    });
 
     socket.on('new-question', (question) => {
       const newQuestion = {
@@ -189,7 +200,7 @@ export default function RoomFeedPage() {
           ←
         </button>
         <h1 className="page-title">Q&A Feed</h1>
-        <button className="settings-icon">⚙️</button>
+        <button className="settings-icon" onClick={() => setShowSettings(true)}>⚙️</button>
       </div>
 
       <div className="room-feed-container">
@@ -319,6 +330,13 @@ export default function RoomFeedPage() {
           </div>
         </div>
       )}
+
+      {/* Settings Modal */}
+      <SettingsModal 
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        userType="student"
+      />
     </div>
   );
 }

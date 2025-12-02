@@ -38,13 +38,18 @@ let socket = null;
 export const initSocket = () => {
   if (!socket) {
     socket = io(SOCKET_URL, {
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: 3,
-      timeout: 5000,
+      reconnectionAttempts: 10,
+      timeout: 10000,
+      forceNew: false,
+    });
+    
+    socket.on('connect', () => {
+      console.log('Socket connected successfully');
     });
     
     socket.on('connect_error', (error) => {

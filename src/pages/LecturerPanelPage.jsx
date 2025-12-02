@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { questionAPI, roomsAPI, getSocket, initSocket } from '../services/api';
+import SettingsModal from '../components/SettingsModal';
 import './LecturerPanelPage.css';
 
 export default function LecturerPanelPage() {
@@ -13,6 +14,7 @@ export default function LecturerPanelPage() {
   const [roomData, setRoomData] = useState(null);
   const [isRoomClosed, setIsRoomClosed] = useState(false);
   const [questionsVisible, setQuestionsVisible] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (!roomId) {
@@ -69,7 +71,15 @@ export default function LecturerPanelPage() {
     const socket = getSocket() || initSocket();
     if (!roomData?.roomCode) return;
 
+    // Join room immediately
     socket.emit('join-room', roomData.roomCode);
+    console.log('Joined room via socket:', roomData.roomCode);
+
+    // Rejoin room on reconnection
+    socket.on('connect', () => {
+      console.log('Socket connected, rejoining room:', roomData.roomCode);
+      socket.emit('join-room', roomData.roomCode);
+    });
 
     socket.on('new-question', (question) => {
       const newQuestion = {
@@ -284,7 +294,7 @@ export default function LecturerPanelPage() {
       <div className="top-header">
         <button className="back-icon" onClick={() => navigate('/my-rooms')}>←</button>
         <h1 className="page-title">Lecturer Panel</h1>
-        <button className="settings-icon">⚙️</button>
+        <button className="settings-icon" onClick={() => setShowSettings(true)}>⚙️</button>
       </div>
 
       <div className="panel-container">
@@ -427,6 +437,13 @@ export default function LecturerPanelPage() {
           </div>
         )}
       </div>
+
+      {/* Settings Modal */}
+      <SettingsModal 
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        userType="lecturer"
+      />
     </div>
   );
 }

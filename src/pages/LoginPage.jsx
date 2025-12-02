@@ -77,12 +77,13 @@ export default function LoginPage() {
           localStorage.setItem('studentTag', studentTag);
         }
         
-        // Navigate to room
-        navigate(`/room/${response.data.room._id}`, {
+        // Navigate to Lecturer Panel (one-time rooms act as lecturers)
+        navigate(`/lecturer/${response.data.room._id}`, {
           state: {
+            roomId: response.data.room._id,
             roomCode: response.data.room.code,
             roomName: response.data.room.roomName,
-            lecturerName: response.data.room.lecturerName,
+            roomStatus: 'active',
             questionsVisible: response.data.room.questionsVisible,
             isOneTime: true
           }

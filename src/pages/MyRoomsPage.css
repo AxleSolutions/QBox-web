@@ -76,14 +76,33 @@
   border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .logout-button:hover {
-  border-color: var(--error);
-  color: var(--error);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.settings-icon-myrooms {
+  padding: 12px;
+  background-color: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.settings-icon-myrooms:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(99, 102, 241, 0.05);
 }
 
 /* Rooms Grid */

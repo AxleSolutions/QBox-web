@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roomsAPI, authAPI } from '../services/api';
+import SettingsModal from '../components/SettingsModal';
 import './MyRoomsPage.css';
 
 export default function MyRoomsPage() {
@@ -8,6 +9,7 @@ export default function MyRoomsPage() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const fetchRooms = async () => {
     try {
@@ -98,9 +100,14 @@ export default function MyRoomsPage() {
               <h1 className="title">My Rooms</h1>
               <p className="subtitle">View and manage your Q&A sessions</p>
             </div>
-            <button className="logout-button" onClick={handleLogout}>
-              🚪 Logout
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <button className="settings-icon-myrooms" onClick={() => setShowSettings(true)}>
+                ⚙️
+              </button>
+              <button className="logout-button" onClick={handleLogout}>
+                🚪 Logout
+              </button>
+            </div>
           </div>
         </div>
 
@@ -178,12 +185,17 @@ export default function MyRoomsPage() {
             <button 
               className="fab"
               onClick={() => navigate('/create-room')}
-            >
-              +
-            </button>
+            >+</button>
           </>
         )}
       </div>
+
+      {/* Settings Modal */}
+      <SettingsModal 
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        userType="lecturer"
+      />
     </div>
   );
 }
