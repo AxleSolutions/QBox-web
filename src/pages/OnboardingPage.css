@@ -36,21 +36,11 @@
   margin-bottom: 48px;
 }
 
-.logo-box {
-  width: 100px;
-  height: 100px;
-  background-color: var(--primary-color);
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo-img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
   margin-bottom: 16px;
-}
-
-.logo-text {
-  font-size: 56px;
-  font-weight: 700;
-  color: var(--white);
 }
 
 .app-name {
@@ -159,14 +149,9 @@
     max-width: 600px;
   }
 
-  .logo-box {
-    width: 120px;
-    height: 120px;
-    border-radius: 28px;
-  }
-
-  .logo-text {
-    font-size: 64px;
+  .logo-img {
+    width: 140px;
+    height: 140px;
   }
 
   .app-name {

@@ -63,8 +63,13 @@ export const getSocket = () => socket;
 // Auth API
 export const authAPI = {
   // Google Sign-In
-  googleAuth: async (idToken) => {
-    const response = await api.post('/auth/google', { idToken });
+  googleAuth: async (userInfo) => {
+    const response = await api.post('/auth/google-web', { 
+      email: userInfo.email,
+      name: userInfo.name,
+      picture: userInfo.picture,
+      sub: userInfo.sub
+    });
     if (response.data.success && response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));

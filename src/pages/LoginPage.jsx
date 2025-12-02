@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import { authAPI, roomsAPI } from '../services/api';
+import logoImg from '../assets/QBox logo png.png';
 import './LoginPage.css';
 
 export default function LoginPage() {
@@ -20,7 +21,18 @@ export default function LoginPage() {
         setGoogleLoading(true);
         setError('');
         
-        const response = await authAPI.googleAuth(tokenResponse.access_token);
+        // Fetch user info with access token
+        const userInfoResponse = await fetch(
+          `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`
+        );
+        const userInfo = await userInfoResponse.json();
+        
+        if (!userInfo.email) {
+          throw new Error('Failed to get user information');
+        }
+        
+        // Send to backend
+        const response = await authAPI.googleAuth(userInfo);
         
         if (response.success) {
           navigate('/my-rooms');
@@ -91,7 +103,7 @@ export default function LoginPage() {
       <div className="login-container">
         {/* Header with Logo */}
         <div className="header">
-          <div className="logo">Q</div>
+          <img src={logoImg} alt="QBox Logo" className="logo-img" />
           <h1 className="title">Welcome to QBox</h1>
           <p className="subtitle">Choose how you want to continue</p>
         </div>

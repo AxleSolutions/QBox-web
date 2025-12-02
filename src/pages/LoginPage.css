@@ -31,10 +31,9 @@
     margin-bottom: 60px;
   }
 
-  .logo {
-    width: 120px;
-    height: 120px;
-    font-size: 56px;
+  .logo-img {
+    width: 140px;
+    height: 140px;
     margin-bottom: 32px;
   }
 
@@ -68,19 +67,12 @@
   margin-bottom: 48px;
 }
 
-.logo {
-  width: 100px;
-  height: 100px;
+.logo-img {
+  width: 120px;
+  height: 120px;
   margin: 0 auto 24px;
-  background: var(--primary);
-  color: white;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  font-weight: 800;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+  display: block;
+  object-fit: contain;
 }
 
 .title {
