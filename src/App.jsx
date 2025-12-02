@@ -10,7 +10,9 @@ import LecturerPanelPage from './pages/LecturerPanelPage';
 import './App.css';
 
 // Your Google OAuth Client ID (Web Client ID from Google Cloud Console)
-const GOOGLE_CLIENT_ID = 'YOUR_WEB_CLIENT_ID_HERE';
+// TODO: Replace with your actual Web Client ID from Google Cloud Console
+// Example: '123456789-abcdefghijk.apps.googleusercontent.com'
+const GOOGLE_CLIENT_ID = '531788294144-1ilnampcqrrjianujc9u9q27ts8uqhg3.apps.googleusercontent.com';
 
 function App() {
   return (
