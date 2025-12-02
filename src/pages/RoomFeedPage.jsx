@@ -280,8 +280,7 @@ export default function RoomFeedPage() {
         className="fab"
         onClick={() => setShowAskModal(true)}
       >
-        <span className="fab-icon">✏️</span>
-        <span className="fab-text">Ask</span>
+        <span className="fab-text">+</span>
       </button>
 
       {/* Ask Question Modal */}
