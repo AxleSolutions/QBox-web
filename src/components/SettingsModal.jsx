@@ -163,16 +163,6 @@ export default function SettingsModal({ isOpen, onClose, userType = 'student' })
 
             <div className="setting-divider"></div>
 
-            <div className="setting-item">
-              <div className="setting-left">
-                <span className="setting-icon">ℹ️</span>
-                <div className="setting-text">
-                  <div className="setting-title">App Version</div>
-                  <div className="setting-description">Current version</div>
-                </div>
-              </div>
-              <span className="version-text">1.0.0</span>
-            </div>
           </div>
 
           {/* Support Section */}
