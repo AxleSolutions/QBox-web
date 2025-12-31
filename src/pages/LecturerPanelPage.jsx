@@ -274,8 +274,8 @@ export default function LecturerPanelPage() {
       if (response.success) {
         setQuestionsVisible(response.data.questionsVisible);
         alert(response.data.questionsVisible 
-          ? '✅ Questions now visible to all students'
-          : '🔒 Questions now private (students see only their own)'
+          ? 'Questions now visible to all students'
+          : 'Questions now private (students see only their own)'
         );
       }
     } catch (error) {
@@ -291,7 +291,7 @@ export default function LecturerPanelPage() {
       const response = await roomsAPI.closeRoom(roomId, roomData?.roomCode);
       if (response.success) {
         setIsRoomClosed(true);
-        alert('🔒 Room closed successfully');
+        alert('Room closed successfully');
       }
     } catch (error) {
       console.error('Error closing room:', error);
@@ -362,7 +362,7 @@ export default function LecturerPanelPage() {
           {/* Close Room Button */}
           {!isRoomClosed && (
             <button className="close-room-btn" onClick={handleCloseRoom}>
-              🔒 Close Room
+              Close Room
             </button>
           )}
         </div>

@@ -186,7 +186,7 @@ export default function LoginPage() {
                   className={`room-type-button ${questionsVisible ? 'active' : ''}`}
                   onClick={() => setQuestionsVisible(true)}
                 >
-                  <span className="room-type-button-text">👁️ Public</span>
+                  <span className="room-type-button-text">Public</span>
                   <span className="room-type-button-desc">Everyone sees all questions</span>
                 </button>
                 
@@ -194,7 +194,7 @@ export default function LoginPage() {
                   className={`room-type-button ${!questionsVisible ? 'active' : ''}`}
                   onClick={() => setQuestionsVisible(false)}
                 >
-                  <span className="room-type-button-text">🔒 Private</span>
+                  <span className="room-type-button-text">Private</span>
                   <span className="room-type-button-desc">Students see only their own</span>
                 </button>
               </div>
