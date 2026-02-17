@@ -9,6 +9,22 @@ export default function RoomFeedPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentRoom, setCurrentRoom] = useState(location.state || null);
+  
+  // Restore missing state variables
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [studentTag, setStudentTag] = useState(null);
+  const [showAskModal, setShowAskModal] = useState(false);
+  const [questionText, setQuestionText] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedQuestionId, setSelectedQuestionId] = useState(null);
+
+  // Derive room properties from currentRoom state
+  const { roomCode, roomName, lecturerName, questionsVisible } = currentRoom || {};
 
   useEffect(() => {
     // If we already have the room data (from nav state), use it
