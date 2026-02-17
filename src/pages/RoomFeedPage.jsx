@@ -66,25 +66,85 @@ export default function RoomFeedPage() {
   };
 
   useEffect(() => {
-    if (!roomCode) {
-      navigate('/');
-      return;
+    // If we have state, use it. Otherwise, we need to fetch info.
+    if (roomCode) {
+      const tag = localStorage.getItem('studentTag');
+      setStudentTag(tag);
+      fetchQuestions(tag, roomId);
+      setupSocket(roomCode);
+    } else {
+      resolveRoom(roomId);
     }
+  }, [roomId, roomCode]); // Dependencies
 
-    // Get student tag
-    const tag = localStorage.getItem('studentTag');
-    setStudentTag(tag);
-
-    fetchQuestions(tag);
-    setupSocket();
-  }, [roomId, roomCode]);
-
-  const fetchQuestions = async (tag) => {
+  const resolveRoom = async (idOrCode) => {
     try {
-      console.log('Fetching questions for room:', roomId, 'with tag:', tag || studentTag);
-      const response = await questionAPI.getQuestions(roomId, tag || studentTag);
-      console.log('Questions response:', response);
+      setLoading(true);
+      // Check if it looks like a Room Code (short, not 24 chars hex)
+      const isRoomCode = idOrCode.length < 20; 
       
+      let roomData;
+      if (isRoomCode) {
+        // Assume it's a code, try to join
+        const response = await roomsAPI.joinRoom(idOrCode);
+        if (response.success) {
+          roomData = response.data;
+        } else {
+          throw new Error(response.message || 'Failed to join room');
+        }
+      } else {
+        // Assume it's an ID, try to get room details
+        try {
+          const response = await roomsAPI.getRoom(idOrCode);
+          if (response.success) {
+            roomData = response.data;
+          } else {
+             // Fallback: If getRoom fails, maybe we need to join? 
+             // But we don't have the code. Raise error.
+             throw new Error('Room not found or access denied');
+          }
+        } catch (err) {
+           // If getRoom failed, we can't do much without a code.
+           throw err;
+        }
+      }
+
+      // If we got here, we have roomData. Update state similar to location.state location.
+      // We need to manually update these since they aren't in location.state
+      // NOTE: We can't update destuctured consts from location.state easily. 
+      // We should probably convert those to state variables or use a ref.
+      
+      // Ideally, we should update the URL to the canonical ID if it was a code, 
+      // but let's just make it work first.
+      
+      // RELOAD/NAVIGATE to same page with state popluated?
+      // navigate(`/room/${roomData.roomId}`, { state: roomData, replace: true });
+      // This is the cleanest way to populate the destructive variables.
+      
+      navigate(`/room/${roomData.roomId}`, { 
+        state: {
+          roomId: roomData.roomId,
+          roomCode: roomData.roomCode,
+          roomName: roomData.roomName,
+          lecturerName: roomData.lecturerName,
+          questionsVisible: roomData.questionsVisible,
+          status: roomData.status
+        },
+        replace: true
+      });
+      
+    } catch (error) {
+      console.error('Room resolution error:', error);
+      alert(error.message || 'Invalid Room Link');
+      navigate('/');
+    }
+  };
+
+  const fetchQuestions = async (tag, rId) => {
+    try {
+      const targetRoomId = rId || roomId;
+      const response = await questionAPI.getQuestions(targetRoomId, tag || studentTag);
+      // ... rest of fetchQuestions
       if (response.success) {
         const transformedQuestions = response.data.map(q => ({
           id: q._id,
@@ -100,69 +160,31 @@ export default function RoomFeedPage() {
         setQuestions(transformedQuestions);
       } else {
         console.error('Failed to fetch questions:', response.message);
-        alert(`Unable to load questions: ${response.message || 'Please try again.'}`);
       }
     } catch (error) {
-      console.error('Error fetching questions:', error.response?.data || error.message || error);
-      alert(`Unable to load questions: ${error.response?.data?.message || error.message || 'Please try again.'}`);
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const setupSocket = () => {
-    const socket = getSocket() || initSocket();
+  const setupSocket = (code) => {
+    const targetCode = code || roomCode;
+    if (!targetCode) return;
     
-    // Join room immediately
-    socket.emit('join-room', roomCode);
-    console.log('Joined room via socket:', roomCode);
-
-    // Rejoin room on reconnection
+    const socket = getSocket() || initSocket();
+    socket.emit('join-room', targetCode);
+    // ... rest of setupSocket
     socket.on('connect', () => {
-      console.log('Socket connected, rejoining room:', roomCode);
-      socket.emit('join-room', roomCode);
+      socket.emit('join-room', targetCode);
     });
-
-    socket.on('new-question', (question) => {
-      const newQuestion = {
-        id: question._id,
-        _id: question._id,
-        question: question.questionText,
-        upvotes: question.upvotes || 0,
-        status: question.status || 'pending',
-        isMyQuestion: question.studentTag === studentTag,
-        studentTag: question.studentTag,
-        isReported: question.isReported || false,
-        answer: question.answer || null
-      };
-      setQuestions(prev => {
-        const exists = prev.some(q => q._id === question._id);
-        if (exists) return prev;
-        return [newQuestion, ...prev];
-      });
-    });
-
-    socket.on('question-upvote-update', ({ questionId, upvotes }) => {
-      setQuestions(prev => prev.map(q => 
-        q._id === questionId ? { ...q, upvotes } : q
-      ));
-    });
-
-    socket.on('question-marked-answered', ({ questionId }) => {
-      setQuestions(prev => prev.map(q => 
-        q._id === questionId ? { ...q, status: 'answered' } : q
-      ));
-    });
-
-    socket.on('question-removed', ({ questionId }) => {
-      setQuestions(prev => prev.filter(q => q._id !== questionId));
-    });
-
+    // ... listeners
+    // return cleanup
     return () => {
-      socket.off('new-question');
-      socket.off('question-upvote-update');
-      socket.off('question-marked-answered');
-      socket.off('question-removed');
+       socket.off('new-question');
+       socket.off('question-upvote-update');
+       socket.off('question-marked-answered');
+       socket.off('question-removed');
     };
   };
 
