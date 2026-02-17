@@ -143,8 +143,10 @@ export default function RoomFeedPage() {
   const fetchQuestions = async (tag, rId) => {
     try {
       const targetRoomId = rId || roomId;
+      console.log('Fetching questions for room:', targetRoomId, 'with tag:', tag || studentTag);
       const response = await questionAPI.getQuestions(targetRoomId, tag || studentTag);
-      // ... rest of fetchQuestions
+      console.log('Questions response:', response);
+      
       if (response.success) {
         const transformedQuestions = response.data.map(q => ({
           id: q._id,
@@ -162,7 +164,7 @@ export default function RoomFeedPage() {
         console.error('Failed to fetch questions:', response.message);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error fetching questions:', error.response?.data || error.message || error);
     } finally {
       setLoading(false);
     }
@@ -173,18 +175,62 @@ export default function RoomFeedPage() {
     if (!targetCode) return;
     
     const socket = getSocket() || initSocket();
+    
+    // Join room immediately
     socket.emit('join-room', targetCode);
-    // ... rest of setupSocket
+    console.log('Joined room via socket:', targetCode);
+
+    // Rejoin room on reconnection
     socket.on('connect', () => {
+      console.log('Socket connected, rejoining room:', targetCode);
       socket.emit('join-room', targetCode);
     });
-    // ... listeners
-    // return cleanup
+
+    const handleNewQuestion = (question) => {
+      const newQuestion = {
+        id: question._id,
+        _id: question._id,
+        question: question.questionText,
+        upvotes: question.upvotes || 0,
+        status: question.status || 'pending',
+        isMyQuestion: question.studentTag === studentTag,
+        studentTag: question.studentTag,
+        isReported: question.isReported || false,
+        answer: question.answer || null
+      };
+      setQuestions(prev => {
+        const exists = prev.some(q => q._id === question._id);
+        if (exists) return prev;
+        return [newQuestion, ...prev];
+      });
+    };
+
+    const handleUpvoteUpdate = ({ questionId, upvotes }) => {
+      setQuestions(prev => prev.map(q => 
+        q._id === questionId ? { ...q, upvotes } : q
+      ));
+    };
+
+    const handleQuestionAnswered = ({ questionId }) => {
+      setQuestions(prev => prev.map(q => 
+        q._id === questionId ? { ...q, status: 'answered' } : q
+      ));
+    };
+
+    const handleQuestionRemoved = ({ questionId }) => {
+      setQuestions(prev => prev.filter(q => q._id !== questionId));
+    };
+
+    socket.on('new-question', handleNewQuestion);
+    socket.on('question-upvote-update', handleUpvoteUpdate);
+    socket.on('question-marked-answered', handleQuestionAnswered);
+    socket.on('question-removed', handleQuestionRemoved);
+
     return () => {
-       socket.off('new-question');
-       socket.off('question-upvote-update');
-       socket.off('question-marked-answered');
-       socket.off('question-removed');
+      socket.off('new-question', handleNewQuestion);
+      socket.off('question-upvote-update', handleUpvoteUpdate);
+      socket.off('question-marked-answered', handleQuestionAnswered);
+      socket.off('question-removed', handleQuestionRemoved);
     };
   };
 
