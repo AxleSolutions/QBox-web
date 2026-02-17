@@ -8,79 +8,32 @@ export default function RoomFeedPage() {
   const { roomId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { roomCode, roomName, lecturerName, questionsVisible, isOneTime } = location.state || {};
-  
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [studentTag, setStudentTag] = useState(null);
-  const [showAskModal, setShowAskModal] = useState(false);
-  const [questionText, setQuestionText] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [selectedQuestionId, setSelectedQuestionId] = useState(null);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchQuestions(studentTag);
-    setRefreshing(false);
-  };
-
-  const handleReport = (questionId) => {
-    setSelectedQuestionId(questionId);
-    setShowReportModal(true);
-  };
-
-  const submitReport = async (reason) => {
-    try {
-      const response = await questionAPI.reportQuestion(selectedQuestionId, studentTag, reason);
-      
-      setShowReportModal(false);
-      
-      if (response.success) {
-        alert(`✅ Reported: Question has been reported as ${reason.toLowerCase()}`);
-        // Update local state to mark as reported
-        setQuestions(prevQuestions =>
-          prevQuestions.map(q =>
-            q._id === selectedQuestionId ? { ...q, isReported: true } : q
-          )
-        );
-      } else {
-        // If already reported, allow changing report type
-        if (response.message && response.message.includes('already reported')) {
-          const changeType = window.confirm(`You've already reported this question. Would you like to change the report type to ${reason}?`);
-          if (changeType) {
-            alert(`✅ Report updated: Changed to ${reason.toLowerCase()}`);
-          }
-        } else {
-          alert(response.message || 'Unable to report question');
-        }
-      }
-    } catch (error) {
-      console.error('Error reporting question:', error);
-      alert('Unable to report question. Please try again.');
-      setShowReportModal(false);
-    }
-  };
+  const [currentRoom, setCurrentRoom] = useState(location.state || null);
 
   useEffect(() => {
-    // If we have state, use it. Otherwise, we need to fetch info.
-    if (roomCode) {
+    // If we already have the room data (from nav state), use it
+    if (location.state) {
+      setCurrentRoom(location.state);
+      return;
+    }
+
+    // Otherwise, we need to resolve it from the params (ID or Code)
+    resolveRoom(roomId);
+  }, [roomId, location.state]);
+
+  // Effect to load data once we have the room details
+  useEffect(() => {
+    if (currentRoom) {
       const tag = localStorage.getItem('studentTag');
       setStudentTag(tag);
-      fetchQuestions(tag, roomId);
-      setupSocket(roomCode);
-    } else {
-      resolveRoom(roomId);
+      fetchQuestions(tag, currentRoom.roomId);
+      setupSocket(currentRoom.roomCode);
     }
-  }, [roomId, roomCode]); // Dependencies
+  }, [currentRoom]);
 
   const resolveRoom = async (idOrCode) => {
     try {
       setLoading(true);
-      // Check if it looks like a Room Code (short, not 24 chars hex)
       const isRoomCode = idOrCode.length < 20; 
       
       let roomData;
@@ -94,43 +47,24 @@ export default function RoomFeedPage() {
         }
       } else {
         // Assume it's an ID, try to get room details
-        try {
-          const response = await roomsAPI.getRoom(idOrCode);
-          if (response.success) {
-            roomData = response.data;
-          } else {
-             // Fallback: If getRoom fails, maybe we need to join? 
-             // But we don't have the code. Raise error.
-             throw new Error('Room not found or access denied');
-          }
-        } catch (err) {
-           // If getRoom failed, we can't do much without a code.
-           throw err;
+        // Note: This might fail if user is not authorized, but we try anyway
+        const response = await roomsAPI.getRoom(idOrCode);
+        if (response.success) {
+          roomData = response.data;
+        } else {
+           throw new Error('Room not found or access denied');
         }
       }
 
-      // If we got here, we have roomData. Update state similar to location.state location.
-      // We need to manually update these since they aren't in location.state
-      // NOTE: We can't update destuctured consts from location.state easily. 
-      // We should probably convert those to state variables or use a ref.
-      
-      // Ideally, we should update the URL to the canonical ID if it was a code, 
-      // but let's just make it work first.
-      
-      // RELOAD/NAVIGATE to same page with state popluated?
-      // navigate(`/room/${roomData.roomId}`, { state: roomData, replace: true });
-      // This is the cleanest way to populate the destructive variables.
-      
-      navigate(`/room/${roomData.roomId}`, { 
-        state: {
-          roomId: roomData.roomId,
+      // Success! Update local state
+      console.log('Resolved Room Data:', roomData);
+      setCurrentRoom({
+          roomId: roomData.roomId || roomData._id, // Handle different response structures
           roomCode: roomData.roomCode,
           roomName: roomData.roomName,
           lecturerName: roomData.lecturerName,
           questionsVisible: roomData.questionsVisible,
           status: roomData.status
-        },
-        replace: true
       });
       
     } catch (error) {
@@ -142,7 +76,9 @@ export default function RoomFeedPage() {
 
   const fetchQuestions = async (tag, rId) => {
     try {
-      const targetRoomId = rId || roomId;
+      const targetRoomId = rId || (currentRoom?.roomId);
+      if (!targetRoomId) return;
+
       console.log('Fetching questions for room:', targetRoomId, 'with tag:', tag || studentTag);
       const response = await questionAPI.getQuestions(targetRoomId, tag || studentTag);
       console.log('Questions response:', response);
@@ -171,7 +107,7 @@ export default function RoomFeedPage() {
   };
 
   const setupSocket = (code) => {
-    const targetCode = code || roomCode;
+    const targetCode = code || (currentRoom?.roomCode);
     if (!targetCode) return;
     
     const socket = getSocket() || initSocket();
@@ -235,7 +171,8 @@ export default function RoomFeedPage() {
   };
 
   const getVisibleQuestions = () => {
-    if (questionsVisible) {
+    // Use optional chain in case currentRoom isn't ready
+    if (currentRoom?.questionsVisible) {
       return questions;
     } else {
       return questions.filter(q => q.isMyQuestion);
