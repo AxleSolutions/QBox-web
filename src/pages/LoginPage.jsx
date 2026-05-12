@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
+import { Helmet } from 'react-helmet-async';
 import { authAPI, roomsAPI } from '../services/api';
 import logoImg from '../assets/QBox logo png.png';
 import './LoginPage.css';
@@ -101,6 +102,10 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
+      <Helmet>
+        <title>Login to QBox - Interactive Learning Platform</title>
+        <meta name="description" content="Sign in to QBox using Google or create a one-time session for anonymous Q&A in classroom sessions." />
+      </Helmet>
       <div className="login-container">
         {/* Header with Logo */}
         <div className="header">

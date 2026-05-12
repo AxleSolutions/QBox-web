@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { roomsAPI } from '../services/api';
 import './CreateRoomPage.css';
 
@@ -51,6 +52,10 @@ export default function CreateRoomPage() {
 
   return (
     <div className="create-room-page">
+      <Helmet>
+        <title>Create a Room - QBox</title>
+        <meta name="description" content="Create your own QBox room for interactive Q&A sessions. Set up anonymous question asking for your classroom or event." />
+      </Helmet>
       <div className="create-room-content">
         {/* Header */}
         <div className="header">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './OnboardingPage.css';
 import logoImg from '../assets/QBox logo png.png';
 
@@ -8,6 +9,12 @@ function OnboardingPage() {
 
   return (
     <div className="onboarding-page">
+      <Helmet>
+        <title>QBox - Ask Freely, Learn Better</title>
+        <meta name="description" content="Join QBox, the anonymous Q&A platform for interactive classroom sessions. Ask questions freely and enhance your learning experience." />
+        <meta property="og:title" content="QBox - Ask Freely, Learn Better" />
+        <meta property="og:description" content="Anonymous Q&A platform for interactive classroom sessions. Join now to ask questions freely." />
+      </Helmet>
       <div className="onboarding-content">
         {/* Logo Section */}
         <div className="logo-section">

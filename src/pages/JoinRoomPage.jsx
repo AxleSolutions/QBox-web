@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { roomsAPI } from '../services/api';
 import './JoinRoomPage.css';
 
@@ -59,6 +60,10 @@ export default function JoinRoomPage() {
 
   return (
     <div className="join-room-page">
+      <Helmet>
+        <title>Join a Room - QBox</title>
+        <meta name="description" content="Enter your 6-character room code to join an interactive QBox session and start asking questions anonymously." />
+      </Helmet>
       <div className="join-room-content">
         {/* Header */}
         <div className="header">
