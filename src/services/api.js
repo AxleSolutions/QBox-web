@@ -251,9 +251,12 @@ export const questionAPI = {
     return response.data;
   },
 
-  reportQuestion: async (questionId) => {
-    const studentTag = localStorage.getItem('studentTag');
-    const response = await api.put(`/questions/${questionId}/report`, { studentTag });
+  reportQuestion: async (questionId, reason = 'Reported', tag = null) => {
+    const studentTag = tag || localStorage.getItem('studentTag');
+    const response = await api.put(`/questions/${questionId}/report`, { 
+      studentTag,
+      reason 
+    });
     return response.data;
   },
 
@@ -283,16 +286,8 @@ export const questionAPI = {
     return response.data;
   },
 
-  upvoteQuestion: async (questionId) => {
-    const response = await api.put(`/questions/${questionId}/upvote`);
-    return response.data;
-  },
-
-  reportQuestion: async (questionId, studentTag, reason) => {
-    const response = await api.put(`/questions/${questionId}/report`, { 
-      studentTag,
-      reason 
-    });
+  restoreQuestion: async (questionId) => {
+    const response = await api.put(`/questions/${questionId}/restore`);
     return response.data;
   },
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { questionAPI, getSocket, initSocket } from '../services/api';
+import { questionAPI, roomsAPI, getSocket, initSocket } from '../services/api';
 import SettingsModal from '../components/SettingsModal';
 import './RoomFeedPage.css';
 
@@ -232,6 +232,39 @@ export default function RoomFeedPage() {
       alert(`Failed to submit question: ${error.response?.data?.message || error.message || 'Please try again.'}`);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchQuestions(studentTag, currentRoom?.roomId || roomId);
+    setRefreshing(false);
+  };
+
+  const handleReport = (questionId) => {
+    setSelectedQuestionId(questionId);
+    setShowReportModal(true);
+  };
+
+  const submitReport = async (reason) => {
+    try {
+      const response = await questionAPI.reportQuestion(selectedQuestionId, reason, studentTag);
+      setShowReportModal(false);
+
+      if (response.success) {
+        alert(`Question has been reported as ${reason.toLowerCase()}`);
+        setQuestions(prev =>
+          prev.map(q =>
+            q._id === selectedQuestionId ? { ...q, isReported: true } : q
+          )
+        );
+      } else {
+        alert(response.message || 'Unable to report question');
+      }
+    } catch (error) {
+      console.error('Error reporting question:', error);
+      alert('Unable to report question. Please try again.');
+      setShowReportModal(false);
     }
   };
 
